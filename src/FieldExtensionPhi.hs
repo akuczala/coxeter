@@ -1,4 +1,7 @@
-module FieldExtensionPhi(PhiExt(PhiExt), phi, phiInverse, phiSquared, baseValue) where
+module FieldExtensionPhi(
+  PhiExt(PhiExt), phi, phiInverse, phiSquared, baseValue,
+  phiDouble, toDouble
+) where
 
 import Control.Applicative (liftA2)
 import Linear.Epsilon (Epsilon (nearZero))
@@ -55,3 +58,9 @@ instance (Fractional a) => Fractional (PhiExt a) where
   fromRational x = baseValue (fromRational x)
   recip v = conjugate v * baseValue prodInverse where
      prodInverse =  1 / baseComponent (v * conjugate v)
+     
+phiDouble :: Double
+phiDouble = (1 + sqrt 5) / 2
+
+toDouble :: PhiExt Rational -> Double
+toDouble (PhiExt x y) = fromRational x + fromRational y * phiDouble

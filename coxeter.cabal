@@ -29,8 +29,14 @@ library
       FieldExtensionPhi
       FieldExtensions
       Lib
+      ListExtras
+      MatrixExtras
+      MonoidExtras
+      Orphans
       PrettyPrint
-      TestLinear
+      Reflections
+      SquareMatrix
+      VectorExtras
   other-modules:
       Paths_coxeter
   hs-source-dirs:
