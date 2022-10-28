@@ -1,44 +1,38 @@
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 
-module FieldExtensions (Root2Ext (..), makeExt) where
+module FieldExtensions (
+  AlgExt(AlgExt, baseComponent, extComponent),
+  Root(rootInverse, rootProduct)
+) where
 
 import Control.Applicative (liftA2)
 import Linear.Epsilon (Epsilon (nearZero))
-import PrettyPrint
 
-data Root2Ext a = Root2Ext {baseComponent :: a, extComponent :: a} deriving (Show)
-
-instance (Epsilon a) => Epsilon (Root2Ext a) where
-  nearZero (Root2Ext x y) = nearZero x && nearZero y
-
-instance (PrettyPrint a, Num a, Eq a) => PrettyPrint (Root2Ext a) where
-  prettyPrint (Root2Ext x 0) = prettyPrint x
-  prettyPrint (Root2Ext 0 y) = prettyPrint y ++ "r2"
-  prettyPrint (Root2Ext x y) = prettyPrint x ++ " + " ++ prettyPrint y ++ "r2"
-
-makeExt :: a -> a -> Root2Ext a
-makeExt = Root2Ext
-
--- zeroRoot = Root2Ext {baseComponent=0, extComponent=0}
-
-instance Functor Root2Ext where
-  fmap f x = Root2Ext (f $ baseComponent x) (f $ extComponent x)
+class Root r where
+  rootInverse :: (Fractional a) => AlgExt r a -> AlgExt r a
+  rootProduct :: (Num a) => AlgExt r a -> AlgExt r a -> AlgExt r a
   
-instance Applicative Root2Ext where
-  pure x = Root2Ext x x
-  -- liftA2 f x y = Root2Ext{baseComponent = f (baseComponent x) (baseComponent y), extComponent= f (extComponent x) (extComponent y)}
-  f <*> y = Root2Ext{baseComponent = baseComponent f (baseComponent y), extComponent= extComponent f (extComponent y)}
+data AlgExt r a = AlgExt {baseComponent :: a, extComponent :: a} deriving (Show)
 
-instance (Num a) => Num (Root2Ext a) where
+instance (Root r, Epsilon a) => Epsilon (AlgExt r a) where
+  nearZero (AlgExt x y) = nearZero x && nearZero y
+
+instance Functor (AlgExt r) where
+  fmap f x = AlgExt (f $ baseComponent x) (f $ extComponent x)
+  
+instance Applicative (AlgExt r) where
+  pure x = AlgExt x x
+  f <*> y = AlgExt{baseComponent = baseComponent f (baseComponent y), extComponent= extComponent f (extComponent y)}
+
+instance (Root r, Num a) => Num (AlgExt r a) where
   (+) = liftA2 (+)
   (-) = liftA2 (-)
-  (Root2Ext a b) * (Root2Ext c d) = Root2Ext (a * c + 2 * b * d) (b * c + a * d)
-  fromInteger x = Root2Ext (fromInteger x) 0
-  abs (Root2Ext a b) = Root2Ext (a * a + b * b) 0 -- there exists a nice absolute value but i don't know it
+  x * y = rootProduct x y
+  fromInteger x = AlgExt (fromInteger x) 0
+  abs (AlgExt a b) = AlgExt (a * a + b * b) 0 -- there exists a nice absolute value but i don't know it
   signum x = x
 
-instance (Fractional a) => Fractional (Root2Ext a) where
-  fromRational x = Root2Ext (fromRational x) 0
-  recip v@(Root2Ext x y) = Root2Ext (x / prod) (-y / prod) where
-     prod = baseComponent (v * v) -- this is wrong
-  
+instance (Root r, Fractional a) => Fractional (AlgExt r a) where
+  fromRational x = AlgExt (fromRational x) 0
+  recip x = rootInverse x

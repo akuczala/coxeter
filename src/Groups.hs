@@ -1,10 +1,13 @@
 module Groups(
   b3Basis,
+  b3Generators,
+  b3Elements,
   h2Basis,
+  h2Generators,
+  h2Elements,
   getGenerators,
   generateGroupElements,
-  h2Generators,
-  h2Elements
+
 ) where
 
 import Linear.Vector
@@ -39,6 +42,12 @@ getGenerators = map reflectMatrix
 
 generateGroupElements :: (Applicative v, Traversable v, Metric v, Epsilon (v a), Epsilon (v (v a)), Epsilon a) => Int -> [v (v a)] -> [v (v a)]
 generateGroupElements maxIter generators = map (fmap cleanEpsilon . getSquareMatrix) $ fromGenerators maxIter (map SquareMatrix $ identity : generators)
+
+b3Generators :: (Fractional a) => a -> [V3 (V3 a)]
+b3Generators sqrt2 = getGenerators $ b3Basis sqrt2
+
+b3Elements :: (Epsilon a, Fractional a) => a -> [V3 (V3 a)]
+b3Elements sqrt2 = generateGroupElements 100 $ b3Generators sqrt2
 
 h2Generators :: (Fractional a) => a -> [V3 (V3 a)]
 h2Generators phi = getGenerators $ h2Basis phi
