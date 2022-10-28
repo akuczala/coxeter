@@ -30,7 +30,6 @@ library
       FieldExtensions
       Groups
       Lib
-      ListExtras
       MatrixExtras
       MonoidExtras
       Orphans

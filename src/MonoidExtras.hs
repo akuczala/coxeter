@@ -20,7 +20,7 @@ uniqueListProduct :: (Eq a, Semigroup a) => [a] -> [a] -> [a]
 uniqueListProduct ls1 ls2 = nub [x1 <> x2 | x1 <- ls1, x2 <- ls2]
 
 fromGenerators' :: (Eq a, Monoid a) => Int -> [a] -> [a] -> [a]
-fromGenerators' 0 gens ls = ls
+fromGenerators' 0 _ ls = ls
 fromGenerators' maxIter gens ls =
   if length newList == length ls
     then newList

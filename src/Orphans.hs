@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleInstances #-}
 
-module Orphans where
+module Orphans() where
 
 import Linear.Epsilon (Epsilon(nearZero))
 

@@ -1,4 +1,8 @@
-module Reflections where
+module Reflections(
+  reflectAlong,
+  reflectAlongUnit,
+  reflectMatrix
+) where
 
 import Linear.Metric
 import Linear.Vector
