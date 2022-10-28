@@ -28,6 +28,7 @@ library
       Algebra
       FieldExtensionPhi
       FieldExtensions
+      Groups
       Lib
       ListExtras
       MatrixExtras
@@ -35,6 +36,7 @@ library
       Orphans
       PrettyPrint
       Reflections
+      Shapes
       SquareMatrix
       VectorExtras
   other-modules:

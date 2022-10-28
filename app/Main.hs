@@ -3,53 +3,54 @@ module Main (main) where
 import Linear.V3
 import Linear.Vector
 
-import FieldExtensionPhi(PhiExt, phi, phiInverse, baseValue)
-import Linear.Matrix (identity)
+import FieldExtensionPhi(PhiExt(PhiExt), phi, phiInverse, baseValue, toDouble)
+import Linear.Matrix (identity, (!*), (!*!))
 import Reflections(reflectMatrix)
 import SquareMatrix
 import MonoidExtras
-import MatrixExtras(cleanEpsilon)
+import MatrixExtras(cleanEpsilon, matrixPow, matrixOrder')
 import Orphans
+import VectorExtras (prettyPrintVector)
+import Data.List (nub, sort, sortBy, nubBy)
+import Data.Ratio (numerator)
+import Groups
 
 type VectorField = PhiExt Rational
--- vs :: [V3 Double]
---vs = [
---  unit _x,
---  V3 (cos $ pi / 3) (sin $ pi / 3) 0,
---  V3 0 a (sqrt $ 1 - a * a)
---     ] where
---        a = (1 + sqrt 5) / (2 * sqrt 3)
 
---vs = [
---  unit _x,
---  V3 (sqrt 2 / 2) (sqrt 2 / 2) 0,
---  V3 0 (1 / sqrt 2) (1 / sqrt 2)
---     ] :: [V3 Double]
+gens = (getGenerators . h2Basis) phi  :: [V3 (V3 VectorField)]
 
+groupElements = generateGroupElements 100 gens
 
---root2 :: VectorField
---root2 = Root2Ext 0 1
---
---vs = [
---  unit _x,
---  V3 (root2 / 2) (root2 /2) 0,
---  V3 0 (1 / root2) (1 / root2)
---     ] :: [V3 VectorField]
+ones = pure 1 :: V3 VectorField
 
-w = V3 (baseValue 0) phi phiInverse :: V3 VectorField
-vs = [
-  (V3 1 1 1 - w) ^* (phi / 2),
-  (V3 1 1 (-1) - w) / 2,
-  (V3 (-phi) phiInverse 0 - w) / 2
-  ] :: [V3 VectorField]
+g5 = matrixPow ((gens !! 0) !*! (gens !! 1)) 3
 
-rs = map reflectMatrix vs :: [V3 (V3 VectorField)]
+pentagonPoints = map (\i -> matrixPow g5 i !* ones) [0..4]
 
-gens = identity : rs :: [V3 (V3 VectorField)]
+transformFace g = map (g !*)
 
-groupElements = map (fmap cleanEpsilon . getSquareMatrix) $ fromGenerators 100 (map SquareMatrix gens)
+stupidHashFace = sortBy (\x y -> compare (prettyPrintVector x) (prettyPrintVector y))
+
+faces = nubBy (\x y -> (stupidHashFace x) == (stupidHashFace y) )$ map (\g -> transformFace g pentagonPoints) groupElements
+
+phiExtToList :: PhiExt a -> [a]
+phiExtToList (PhiExt x y) = [x, y]
+
+vectorToList :: V3 a -> [a]
+vectorToList = foldl (\xs x -> x:xs) [] 
 
 main :: IO ()
 main = do
+  print $ orderTable (length groupElements) (map SquareMatrix gens)
   print (length groupElements)
+  print $ length faces
+  print $ nub $ map matrixOrder' groupElements
+  -- print $ fmap (fmap (vectorToList . fmap (phiExtToList . fmap numerator))) faces
+  -- print $ fmap (fmap (vectorToList . fmap toDouble)) faces
+  print (let
+    vecFun = vectorToList . fmap toDouble;
+    faceFun = fmap vecFun
+    in fmap faceFun faces
+    )
+  print $ (fmap . fmap) (vectorToList . fmap toDouble) faces
   return ()

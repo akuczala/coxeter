@@ -11,6 +11,9 @@ data PhiExt a = PhiExt {baseComponent :: a, extComponent :: a} deriving (Show)
 
 instance (Epsilon a) => Epsilon (PhiExt a) where
   nearZero (PhiExt x y) = nearZero x && nearZero y
+  
+instance (Eq a) => Eq (PhiExt a) where
+  x == y = (baseComponent x == baseComponent y) && (extComponent x == extComponent y)
 
 instance (PrettyPrint a, Num a, Eq a) => PrettyPrint (PhiExt a) where
   prettyPrint (PhiExt x 0) = prettyPrint x
