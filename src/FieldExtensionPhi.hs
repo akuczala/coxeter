@@ -12,15 +12,26 @@ data PhiExt a = PhiExt {baseComponent :: a, extComponent :: a} deriving (Show)
 instance (Epsilon a) => Epsilon (PhiExt a) where
   nearZero (PhiExt x y) = nearZero x && nearZero y
   
+instance (Ord a, Epsilon a) => Ord (PhiExt a) where
+  (PhiExt xb xp) <= (PhiExt yb yp) = let
+    a = (yb - xb)
+    b = (yp - xp)
+    discr = -a * a - a * b + b * b
+    in (a >= 0 && b >= 0) || (a < 0 && b > 0 && discr > 0) || (a > 0 && b < 0 && discr < 0)
+  
 instance (Eq a) => Eq (PhiExt a) where
   x == y = (baseComponent x == baseComponent y) && (extComponent x == extComponent y)
 
+phiString :: String
+phiString = "phi"
+
 instance (PrettyPrint a, Num a, Eq a) => PrettyPrint (PhiExt a) where
   prettyPrint (PhiExt x 0) = prettyPrint x
-  prettyPrint (PhiExt 0 1) = "Phi"
-  prettyPrint (PhiExt 0 y) = prettyPrint y ++ "Phi"
-  prettyPrint (PhiExt x 1) = "(" ++ prettyPrint x ++ " + " ++ "Phi" ++ ")"
-  prettyPrint (PhiExt x y) = "(" ++ prettyPrint x ++ " + " ++ prettyPrint y ++ "Phi" ++ ")"
+  prettyPrint (PhiExt 0 1) = phiString
+  prettyPrint (PhiExt 0 y) = prettyPrint y ++ phiString
+  prettyPrint (PhiExt x 1) = "(" ++ prettyPrint x ++ " + " ++ phiString ++ ")"
+  prettyPrint (PhiExt x (-1)) = "(" ++ prettyPrint x ++ " - " ++ phiString ++ ")"
+  prettyPrint (PhiExt x y) = "(" ++ prettyPrint x ++ " + " ++ prettyPrint y ++ phiString ++ ")"
 
 instance Functor PhiExt where
   fmap f x = PhiExt (f $ baseComponent x) (f $ extComponent x)

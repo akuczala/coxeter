@@ -19,3 +19,9 @@ instance PrettyPrint Double where
 
 instance PrettyPrint Int where
   prettyPrint x = show x
+
+instance PrettyPrint Char where
+  prettyPrint x = show x
+  
+instance (PrettyPrint a) => PrettyPrint [a] where
+  prettyPrint x = show $ map prettyPrint x
