@@ -9,12 +9,12 @@ module MonoidExtras(
 import Data.List (nub)
 
 
-monoidPow :: (Monoid m) => m -> Int -> m
-monoidPow m n = mconcat [m | _<-[1..n]]
+monoidPow :: (Monoid m) => Int -> m -> m
+monoidPow n m = mconcat [m | _<-[1..n]]
 
 monoidOrder :: (Eq m, Monoid m) => Int -> m -> Int
 monoidOrder maxOrder m = 1 + length ls where
-   ls = takeWhile (\n -> monoidPow m n /= mempty) [1..maxOrder]
+   ls = takeWhile (\n -> monoidPow n m /= mempty) [1..maxOrder]
 
 uniqueListProduct :: (Eq a, Semigroup a) => [a] -> [a] -> [a]
 uniqueListProduct ls1 ls2 = nub [x1 <> x2 | x1 <- ls1, x2 <- ls2]

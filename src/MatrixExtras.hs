@@ -14,8 +14,8 @@ import SquareMatrix(SquareMatrix(SquareMatrix, getSquareMatrix))
 import MonoidExtras(monoidPow, monoidOrder)
 
 
-matrixPow :: (Applicative m, Traversable m, Additive m, Num a) => m (m a) -> Int -> m (m a)
-matrixPow m n = getSquareMatrix $ monoidPow (SquareMatrix m) n
+matrixPow :: (Applicative m, Traversable m, Additive m, Num a) => Int -> m (m a) -> m (m a)
+matrixPow n m = getSquareMatrix $ monoidPow n (SquareMatrix m)
 
 matrixOrder :: (Epsilon (m (m a)), Applicative m, Traversable m, Additive m, Epsilon a) => Int -> m (m a) -> Int
 matrixOrder maxOrder m = monoidOrder maxOrder (SquareMatrix m)

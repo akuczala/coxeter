@@ -34,8 +34,8 @@ generateShape groupElements face = Shape $ nub $ map (\g -> transformFace g face
 pentagon :: (Fractional a) => a -> Face (V3 a)
 pentagon phi = let
   gens = (getGenerators . h2Basis) phi
-  g5 = matrixPow (head gens !*! (gens !! 1)) 3
-  in Face $ map (\i -> matrixPow g5 i !* pure 1) [0..4]
+  g5 = matrixPow 3 (head gens !*! (gens !! 1))
+  in Face $ map (\i -> matrixPow i g5 !* pure 1) [0..4]
   
 dodecahedron :: (Ord a, Epsilon a, Fractional a) => a -> Shape (V3 a)
 dodecahedron phi = generateShape (h2Elements phi) (pentagon phi)
