@@ -1,9 +1,7 @@
 module Main (main) where
 
 import Linear.V3
-import SquareMatrix
-import MonoidExtras
-import MatrixExtras(matrixOrder')
+import MatrixExtras
 import Groups
 import Shapes
 import PrettyPrint (prettyPrint)
@@ -31,14 +29,14 @@ dodeca = dodecahedron phiValue
 main :: IO ()
 main = do
   print $ length (b3Elements sqrt2Value)
-  print $ orderTable (length groupElements) (map SquareMatrix (h2Generators phiValue))
+  print $ orderTable (length groupElements) (h2Generators phiValue)
   print (length groupElements)
   print $ length $ getFaces (dodecahedron phiValue)
   print $ nub $ map matrixOrder' groupElements
-  print (let
-    vecFun = vectorToList . fmap toDouble;
-    faceFun = fmap vecFun
-    in faceFun <$> getFaces dodeca
-    )
-  print (fmap (vectorToList . fmap prettyPrint) <$> getFaces dodeca)
+--  print (let
+--    vecFun = vectorToList . fmap toDouble;
+--    faceFun = fmap vecFun
+--    in faceFun <$> getFaces dodeca
+--    )
+  print $ prettyPrint (getFacePoints . fmap vectorToList <$> getFaces dodeca)
   return ()

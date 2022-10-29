@@ -6,7 +6,6 @@ module Phi(
 ) where
 
 import Linear.Epsilon (Epsilon)
-import PrettyPrint
 import FieldExtensions
 
 data Phi
@@ -18,27 +17,17 @@ instance Root Phi where
                     prod2 = b * d
   rootInverse v = conjugate v * baseValue prodInverse where
                        prodInverse =  1 / baseComponent (v * conjugate v)
-  
+  rootString = "phi"
+
 instance (Ord a, Epsilon a) => Ord (AlgExt Phi a) where -- why does this require Eq (AlgExt Phi a)?
   (AlgExt xb xp) <= (AlgExt yb yp) = let
     a = (yb - xb)
     b = (yp - xp)
     discr = -a * a - a * b + b * b
     in (a >= 0 && b >= 0) || (a < 0 && b > 0 && discr > 0) || (a > 0 && b < 0 && discr < 0)
-  
+
 instance (Eq a) => Eq (AlgExt Phi a) where
   x == y = (baseComponent x == baseComponent y) && (extComponent x == extComponent y)
-
-phiString :: String
-phiString = "phi"
-
-instance (PrettyPrint a, Num a, Eq a) => PrettyPrint (AlgExt Phi a) where
-  prettyPrint (AlgExt x 0) = prettyPrint x
-  prettyPrint (AlgExt 0 1) = phiString
-  prettyPrint (AlgExt 0 y) = prettyPrint y ++ phiString
-  prettyPrint (AlgExt x 1) = "(" ++ prettyPrint x ++ " + " ++ phiString ++ ")"
-  prettyPrint (AlgExt x (-1)) = "(" ++ prettyPrint x ++ " - " ++ phiString ++ ")"
-  prettyPrint (AlgExt x y) = "(" ++ prettyPrint x ++ " + " ++ prettyPrint y ++ phiString ++ ")"
 
 baseValue :: (Num a) => a -> AlgExt Phi a
 baseValue x = AlgExt x 0
@@ -55,7 +44,7 @@ phiInverse = AlgExt (-1) 1
 -- value times conjugate value is real
 conjugate :: (Num a) => AlgExt Phi a -> AlgExt Phi a
 conjugate (AlgExt x y) = baseValue x - phiInverse * baseValue y
-     
+
 phiDouble :: Double
 phiDouble = (1 + sqrt 5) / 2
 

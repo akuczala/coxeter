@@ -24,4 +24,8 @@ instance PrettyPrint Char where
   prettyPrint x = show x
   
 instance (PrettyPrint a) => PrettyPrint [a] where
-  prettyPrint x = show $ map prettyPrint x
+  -- prettyPrint xs = foldl (\left x -> left ++ prettyPrint x ++ ", ") "[" (take (length xs - 1) xs)
+  prettyPrint ls = "[" ++ pp ls ++ "]" where
+    pp [] = ""
+    pp [x] = prettyPrint x
+    pp (x:xs) = prettyPrint x ++ ", " ++ pp xs

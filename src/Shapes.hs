@@ -1,7 +1,7 @@
 module Shapes(
   transformFace,
   generateShape,
-  Face(Face),
+  Face(Face, getFacePoints),
   Shape(Shape),
   getFaces,
   pentagon,
@@ -16,11 +16,11 @@ import Groups
 import MatrixExtras
 import Linear (Epsilon)
 
-newtype Face p = Face [p] deriving Show
+newtype Face p = Face {getFacePoints :: [p]} deriving Show
 instance Functor Face where
   fmap f (Face points) = Face $ map f points
 
-instance (Ord a, Eq a) => Eq (Face a) where
+instance (Ord a) => Eq (Face a) where
   (Face x) == (Face y) = sort x == sort y
 
 newtype Shape p = Shape {getFaces :: [Face p]}

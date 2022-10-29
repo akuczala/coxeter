@@ -2,7 +2,8 @@ module MatrixExtras(
   matrixPow,
   matrixOrder,
   matrixOrder',
-  cleanEpsilon
+  cleanEpsilon,
+  orderTable
 ) where
 
 import Linear.Epsilon (Epsilon(nearZero))
@@ -25,5 +26,5 @@ matrixOrder' = matrixOrder 50
 cleanEpsilon :: (Epsilon a) => a -> a
 cleanEpsilon x = if nearZero x then 0 else x
   
-orderTable :: (Epsilon (m (m a)), Applicative m, Traversable m, Additive m, Epsilon a) => [m (m a)] -> [[Int]]
-orderTable gs = [[matrixOrder' (g0 !*! g1) | g1 <- gs] | g0 <- gs]
+orderTable :: (Epsilon (m (m a)), Applicative m, Traversable m, Additive m, Epsilon a) => Int -> [m (m a)] -> [[Int]]
+orderTable maxOrder gs = [[matrixOrder maxOrder (g0 !*! g1) | g1 <- gs] | g0 <- gs]

@@ -1,17 +1,22 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE ScopedTypeVariables#-}
 
 module FieldExtensions (
   AlgExt(AlgExt, baseComponent, extComponent),
-  Root(rootInverse, rootProduct)
+  Root(rootInverse, rootProduct, rootString)
 ) where
 
 import Control.Applicative (liftA2)
 import Linear.Epsilon (Epsilon (nearZero))
+import PrettyPrint (PrettyPrint(prettyPrint))
 
 class Root r where
   rootInverse :: (Fractional a) => AlgExt r a -> AlgExt r a
   rootProduct :: (Num a) => AlgExt r a -> AlgExt r a -> AlgExt r a
+  rootString :: String
   
 data AlgExt r a = AlgExt {baseComponent :: a, extComponent :: a} deriving (Show)
 
@@ -36,3 +41,12 @@ instance (Root r, Num a) => Num (AlgExt r a) where
 instance (Root r, Fractional a) => Fractional (AlgExt r a) where
   fromRational x = AlgExt (fromRational x) 0
   recip x = rootInverse x
+
+instance (Root r, PrettyPrint a, Num a, Eq a) => PrettyPrint (AlgExt r a) where
+  prettyPrint (AlgExt x 0) = prettyPrint x
+  prettyPrint (AlgExt 0 1) = rootString @r
+  prettyPrint (AlgExt 0 (-1)) = "-" ++ rootString @r
+  prettyPrint (AlgExt 0 y) = prettyPrint y ++ rootString @r
+  prettyPrint (AlgExt x 1) = "(" ++ prettyPrint x ++ " + " ++ rootString @r ++ ")"
+  prettyPrint (AlgExt x (-1)) = "(" ++ prettyPrint x ++ " - " ++ rootString @r ++ ")"
+  prettyPrint (AlgExt x y) = "(" ++ prettyPrint x ++ " + " ++ prettyPrint y ++ rootString @r ++ ")"
