@@ -26,12 +26,16 @@ groupElements = h2Elements phiValue
 dodeca :: Shape (V3 (AlgExt Phi Rational))
 dodeca = dodecahedron phiValue
 
+icosa :: Shape (V3 (AlgExt Phi Rational))
+icosa = icosahedron phiValue
+
 main :: IO ()
 main = do
   print $ length (b3Elements sqrt2Value)
   print $ orderTable (length groupElements) (h2Generators phiValue)
   print (length groupElements)
-  print $ length $ getFaces (dodecahedron phiValue)
+  print $ length $ getFaces dodeca
+  print $ length $ getFaces icosa
   print $ nub $ map matrixOrder' groupElements
 --  print (let
 --    vecFun = vectorToList . fmap toDouble;
@@ -39,4 +43,5 @@ main = do
 --    in faceFun <$> getFaces dodeca
 --    )
   print $ prettyPrint (getFacePoints . fmap vectorToList <$> getFaces dodeca)
+  print $ prettyPrint (getFacePoints . fmap vectorToList <$> getFaces icosa)
   return ()

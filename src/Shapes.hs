@@ -5,7 +5,9 @@ module Shapes(
   Shape(Shape),
   getFaces,
   pentagon,
-  dodecahedron
+  dodecahedron,
+  triangle,
+  icosahedron
 ) where
 
 import Linear.Matrix
@@ -39,3 +41,12 @@ pentagon phi = let
   
 dodecahedron :: (Ord a, Epsilon a, Fractional a) => a -> Shape (V3 a)
 dodecahedron phi = generateShape (h2Elements phi) (pentagon phi)
+
+triangle :: (Epsilon a, Fractional a) => a -> Face (V3 a)
+triangle phi = let
+  g3 = h2Elements phi !! 93
+  v0 = V3 (1/phi) 1 0
+  in Face $ map (\i -> matrixPow i g3 !* v0) [0..2]
+  
+icosahedron :: (Ord a, Epsilon a, Fractional a) => a -> Shape (V3 a)
+icosahedron phi = generateShape (h2Elements phi) (triangle phi)
